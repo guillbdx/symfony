@@ -16,6 +16,7 @@ use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\StyleInterface;
+use Symfony\Component\DependencyInjection\Extension\ConfigurationExtensionInterface;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 
 /**
@@ -63,6 +64,11 @@ abstract class AbstractConfigCommand extends ContainerDebugCommand
     {
         $bundles = $this->initializeBundles();
         $minScore = INF;
+
+        $kernel = $this->getApplication()->getKernel();
+        if ($kernel instanceof ExtensionInterface && $kernel instanceof ConfigurationExtensionInterface && $name === $kernel->getAlias()) {
+            return $kernel;
+        }
 
         foreach ($bundles as $bundle) {
             if ($name === $bundle->getName()) {
